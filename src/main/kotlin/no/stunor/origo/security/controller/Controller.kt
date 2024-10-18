@@ -1,4 +1,4 @@
-package no.stunor.origo.eventorapi.controller
+package no.stunor.origo.security.controller
 
 import com.google.firebase.auth.FirebaseAuth
 
