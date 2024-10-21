@@ -1,4 +1,4 @@
-package no.stunor.origo.security
+package no.stunor.origo.organiserapi
 
 import com.google.auth.oauth2.GoogleCredentials
 import com.google.firebase.FirebaseApp

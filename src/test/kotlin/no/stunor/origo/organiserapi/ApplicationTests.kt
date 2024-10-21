@@ -1,4 +1,4 @@
-package no.stunor.origo.security
+package no.stunor.origo.organiserapi
 
 import org.junit.jupiter.api.Test
 import org.springframework.boot.test.context.SpringBootTest
