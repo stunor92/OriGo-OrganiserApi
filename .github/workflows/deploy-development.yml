@@ -6,7 +6,7 @@ on:
 
 env:
   SERVICE_GROUP: origo
-  SERVICE: securityapi
+  SERVICE: organiserapi
   REGION: europe-north1
 
 jobs:

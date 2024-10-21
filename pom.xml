@@ -12,7 +12,7 @@
     </parent>
 
     <groupId>no.stunor.origo</groupId>
-    <artifactId>security-api</artifactId>
+    <artifactId>organiser-api</artifactId>
     <version>1.0-SNAPSHOT</version>
 
     <properties>
