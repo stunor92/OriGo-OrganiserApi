@@ -19,54 +19,9 @@ import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 
 @RestController
-internal class Controller {
+internal class CompetitorController {
     private val log = LoggerFactory.getLogger(this.javaClass)
 
-    @PostMapping("/eventor/{eventorId}/event/{eventId}/race/{raceId}/result")
-    fun postResult(
-        @PathVariable(value = "eventorId") eventorId: String,
-        @PathVariable(value = "eventId") eventId: String,
-        @PathVariable(value = "raceId") raceId: String,
-        @RequestBody(required = true) record: EmitRecord
-    ): ResponseEntity<Competitor> {
-        //TODO
-        val competitor = PersonCompetitor(
-            id = "1234-5678-91011",
-            personId = "123",
-            eventClassId = "123",
-            name = PersonName(
-                given = "John",
-                family = "Doe"
-            ),
-            organisation = Organisation(
-                organisationId = "141",
-                name = "IL Gneist",
-                type = OrganisationType.Club,
-                country = "NOR"
-            ),
-            birthYear = 1992,
-            nationality = "NOR",
-            gender = Gender.Man,
-            punchingUnit = PunchingUnit(
-                id = "123456",
-                type = PunchingUnitType.Emit
-            ),
-            bib = null,
-            status = CompetitorStatus.Finished,
-            startTime = Timestamp.now(),
-            finishTime = Timestamp.now(),
-            result = Result(
-                time = 1234,
-                timeBehind = 0,
-                position = 1,
-                status = ResultStatus.OK
-            ),
-            splitTimes = record.splitTimes,
-            entryFeeIds = listOf("1234", "5678")
-
-        )
-        return ResponseEntity(competitor, HttpStatus.OK)
-    }
     @PostMapping("/eventor/{eventorId}/event/{eventId}/race/{raceId}/competitor")
     fun postCompetitor(
         @PathVariable(value = "eventorId") eventorId: String,
