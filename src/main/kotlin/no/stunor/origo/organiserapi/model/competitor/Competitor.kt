@@ -1,10 +1,11 @@
 package no.stunor.origo.organiserapi.model.competitor
 
 import com.google.cloud.Timestamp
-import java.io.Serializable
+import io.swagger.v3.oas.annotations.media.Schema
 
-
+@Schema(subTypes = [PersonCompetitor::class,TeamCompetitor::class])
 interface Competitor {
+    @set:Schema(description = "Unique identifier for the competitor. Only provide this if you are updating existing competitor.", required = false)
     var id: String?
     var name: Any
     var raceId: String
