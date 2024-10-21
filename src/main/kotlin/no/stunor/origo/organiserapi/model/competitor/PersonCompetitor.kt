@@ -1,5 +1,6 @@
 package no.stunor.origo.organiserapi.model.competitor
 
+import com.fasterxml.jackson.annotation.JsonIgnore
 import com.google.cloud.Timestamp
 import com.google.cloud.firestore.annotation.DocumentId
 import no.stunor.origo.organiserapi.model.organisation.Organisation
@@ -10,6 +11,7 @@ import no.stunor.origo.organiserapi.model.person.PersonName
 data class PersonCompetitor(
         @DocumentId
         override var id: String? = null,
+        @JsonIgnore
         override var raceId: String = "",
         override var eventClassId: String = "",
         var personId: String? = null,
