@@ -7,6 +7,11 @@ server:
     include-message: always
   servlet:
     context-path: /rest
+springdoc:
+  api-docs:
+    path: /api-docs
+  swagger-ui:
+    path: /documentation.html
 management:
   endpoints:
     web:
