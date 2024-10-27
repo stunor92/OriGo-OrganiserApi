@@ -124,7 +124,7 @@
                     <sources>
                         <source>src/main/resources/IOF.xsd</source>
                     </sources>
-                    <packageName>org.iof.eventor</packageName>
+                    <packageName>org.iof</packageName>
                     <clearOutputDir>false</clearOutputDir>
                 </configuration>
             </plugin>

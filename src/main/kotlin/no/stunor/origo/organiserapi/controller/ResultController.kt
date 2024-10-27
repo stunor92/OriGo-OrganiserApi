@@ -13,16 +13,14 @@ import no.stunor.origo.organiserapi.model.organisation.Organisation
 import no.stunor.origo.organiserapi.model.organisation.OrganisationType
 import no.stunor.origo.organiserapi.model.person.Gender
 import no.stunor.origo.organiserapi.model.person.PersonName
-import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 
 @RestController
 internal class ResultController {
-    private val log = LoggerFactory.getLogger(this.javaClass)
 
-    @PostMapping("/eventor/{eventorId}/event/{eventId}/race/{raceId}/result")
+    @PostMapping("/result/{eventorId}/{eventId}/{raceId}")
     fun postResult(
         @PathVariable(value = "eventorId") eventorId: String,
         @PathVariable(value = "eventId") eventId: String,

@@ -43,14 +43,14 @@
         </xsd:documentation>
       </xsd:annotation>
     </xsd:attribute>
-    <xsd:attribute name="createTime" type="xsd:dateTime" use="optional">
+    <xsd:attribute name="createTime" type="xsd:dateTime">
       <xsd:annotation>
         <xsd:documentation>
           The time when the file was created.
         </xsd:documentation>
       </xsd:annotation>
     </xsd:attribute>
-    <xsd:attribute name="creator" type="xsd:string" use="optional">
+    <xsd:attribute name="creator" type="xsd:string">
       <xsd:annotation>
         <xsd:documentation>
           The name of the software that created the file.
@@ -219,7 +219,7 @@
                 </xsd:documentation>
               </xsd:annotation>
             </xsd:element>
-            <xsd:element name="RaceCourseData" type="RaceCourseData" minOccurs="1" maxOccurs="unbounded">
+            <xsd:element name="RaceCourseData" type="RaceCourseData" maxOccurs="unbounded">
               <xsd:annotation>
                 <xsd:documentation>
                   The course data for each race; one element per race in the event.
@@ -308,7 +308,7 @@
               </xsd:annotation>
             </xsd:element>
           </xsd:sequence>
-          <xsd:attribute name="status" use="optional" default="Complete">
+          <xsd:attribute name="status" default="Complete">
             <xsd:annotation>
               <xsd:documentation>
                 The status of the result list.
@@ -429,7 +429,7 @@
 
   <!-- DATA ELEMENTS -->
 
-  <xsd:complexType name="Id" mixed="false">
+  <xsd:complexType name="Id">
     <xsd:annotation>
       <xsd:documentation>
         Identifier element, used extensively. The id should be known and common for both systems taking part in the data exchange.
@@ -437,7 +437,7 @@
     </xsd:annotation>
     <xsd:simpleContent>
       <xsd:extension base="xsd:string">
-        <xsd:attribute name="type" type="xsd:string" use="optional">
+        <xsd:attribute name="type" type="xsd:string">
           <xsd:annotation>
             <xsd:documentation>
               The issuer of the identity, e.g. World Ranking List.
@@ -481,7 +481,7 @@
         </xsd:annotation>
       </xsd:element>
     </xsd:sequence>
-    <xsd:attribute name="sex" use="optional">
+    <xsd:attribute name="sex">
       <xsd:simpleType>
         <xsd:restriction base="xsd:NMTOKEN">
           <xsd:enumeration value="F"/>
@@ -489,7 +489,7 @@
         </xsd:restriction>
       </xsd:simpleType>
     </xsd:attribute>
-    <xsd:attribute name="modifyTime" type="xsd:dateTime" use="optional"/>
+    <xsd:attribute name="modifyTime" type="xsd:dateTime"/>
   </xsd:complexType>
 
   <xsd:complexType name="PersonName">
@@ -543,7 +543,7 @@
         </xsd:annotation>
       </xsd:element>
     </xsd:sequence>
-    <xsd:attribute name="modifyTime" type="xsd:dateTime" use="optional"/>
+    <xsd:attribute name="modifyTime" type="xsd:dateTime"/>
   </xsd:complexType>
 
   <xsd:complexType name="ControlCard">
@@ -554,14 +554,14 @@
     </xsd:annotation>
     <xsd:simpleContent>
       <xsd:extension base="xsd:string">
-        <xsd:attribute name="punchingSystem" type="xsd:string" use="optional">
+        <xsd:attribute name="punchingSystem" type="xsd:string">
           <xsd:annotation>
             <xsd:documentation>
               The manufacturer of the punching system, e.g. 'SI' or 'Emit'.
             </xsd:documentation>
           </xsd:annotation>
         </xsd:attribute>
-        <xsd:attribute name="modifyTime" type="xsd:dateTime" use="optional"/>
+        <xsd:attribute name="modifyTime" type="xsd:dateTime"/>
       </xsd:extension>
     </xsd:simpleContent>
   </xsd:complexType>
@@ -574,7 +574,7 @@
     </xsd:annotation>
     <xsd:simpleContent>
       <xsd:extension base="xsd:double">
-        <xsd:attribute name="type" type="xsd:string" use="optional"/>
+        <xsd:attribute name="type" type="xsd:string"/>
       </xsd:extension>
     </xsd:simpleContent>
   </xsd:complexType>
@@ -648,7 +648,7 @@
         </xsd:annotation>
       </xsd:element>
     </xsd:sequence>
-    <xsd:attribute name="type" use="optional">
+    <xsd:attribute name="type">
       <xsd:annotation>
         <xsd:documentation>
           The hierarchical level or type of an organisation.
@@ -668,7 +668,7 @@
         </xsd:restriction>
       </xsd:simpleType>
     </xsd:attribute>
-    <xsd:attribute name="modifyTime" type="xsd:dateTime" use="optional"/>
+    <xsd:attribute name="modifyTime" type="xsd:dateTime"/>
   </xsd:complexType>
 
   <xsd:complexType name="Role">
@@ -689,7 +689,7 @@
     </xsd:attribute>
   </xsd:complexType>
 
-  <xsd:complexType name="Event" mixed="false">
+  <xsd:complexType name="Event">
     <xsd:sequence>
       <xsd:element name="Id" type="Id" minOccurs="0"/>
       <xsd:element name="Name" type="xsd:string"/>
@@ -807,7 +807,7 @@
         </xsd:annotation>
       </xsd:element>
     </xsd:sequence>
-    <xsd:attribute name="modifyTime" type="xsd:dateTime" use="optional"/>
+    <xsd:attribute name="modifyTime" type="xsd:dateTime"/>
   </xsd:complexType>
 
   <xsd:complexType name="EntryReceiver">
@@ -959,7 +959,7 @@
         </xsd:annotation>
       </xsd:element>
     </xsd:sequence>
-    <xsd:attribute name="modifyTime" type="xsd:dateTime" use="optional"/>
+    <xsd:attribute name="modifyTime" type="xsd:dateTime"/>
   </xsd:complexType>
 
   <xsd:simpleType name="EventClassification">
@@ -1049,7 +1049,7 @@
         </xsd:annotation>
       </xsd:element>
     </xsd:sequence>
-    <xsd:attribute name="modifyTime" type="xsd:dateTime" use="optional"/>
+    <xsd:attribute name="modifyTime" type="xsd:dateTime"/>
   </xsd:complexType>
 
   <xsd:complexType name="InformationItem">
@@ -1074,7 +1074,7 @@
         </xsd:annotation>
       </xsd:element>
     </xsd:sequence>
-    <xsd:attribute name="modifyTime" type="xsd:dateTime" use="optional"/>
+    <xsd:attribute name="modifyTime" type="xsd:dateTime"/>
   </xsd:complexType>
 
   <xsd:complexType name="Class">
@@ -1163,21 +1163,21 @@
         </xsd:annotation>
       </xsd:element>
     </xsd:sequence>
-    <xsd:attribute name="minAge" type="xsd:integer" use="optional">
+    <xsd:attribute name="minAge" type="xsd:integer">
       <xsd:annotation>
         <xsd:documentation>
           The lowest allowed age for a competitor taking part in the class.
         </xsd:documentation>
       </xsd:annotation>
     </xsd:attribute>
-    <xsd:attribute name="maxAge" type="xsd:integer" use="optional">
+    <xsd:attribute name="maxAge" type="xsd:integer">
       <xsd:annotation>
         <xsd:documentation>
           The highest allowed age for a competitor taking part in the class.
         </xsd:documentation>
       </xsd:annotation>
     </xsd:attribute>
-    <xsd:attribute name="sex" use="optional" default="B">
+    <xsd:attribute name="sex" default="B">
       <xsd:simpleType>
         <xsd:restriction base="xsd:NMTOKEN">
           <xsd:enumeration value="B"/>
@@ -1186,49 +1186,49 @@
         </xsd:restriction>
       </xsd:simpleType>
     </xsd:attribute>
-    <xsd:attribute name="minNumberOfTeamMembers" type="xsd:integer" use="optional" default="1">
+    <xsd:attribute name="minNumberOfTeamMembers" type="xsd:integer" default="1">
       <xsd:annotation>
         <xsd:documentation>
           The minimum number of members in a team taking part in the class, if the class is a team class.
         </xsd:documentation>
       </xsd:annotation>
     </xsd:attribute>
-    <xsd:attribute name="maxNumberOfTeamMembers" type="xsd:integer" use="optional" default="1">
+    <xsd:attribute name="maxNumberOfTeamMembers" type="xsd:integer" default="1">
       <xsd:annotation>
         <xsd:documentation>
           The maximum number of members in a team taking part in the class, if the class is a team class.
         </xsd:documentation>
       </xsd:annotation>
     </xsd:attribute>
-    <xsd:attribute name="minTeamAge" type="xsd:integer" use="optional">
+    <xsd:attribute name="minTeamAge" type="xsd:integer">
       <xsd:annotation>
         <xsd:documentation>
           The lowest allowed age sum of the team members for a team taking part in the class.
         </xsd:documentation>
       </xsd:annotation>
     </xsd:attribute>
-    <xsd:attribute name="maxTeamAge" type="xsd:integer" use="optional">
+    <xsd:attribute name="maxTeamAge" type="xsd:integer">
       <xsd:annotation>
         <xsd:documentation>
           The highest allowed age sum of the team members for a team taking part in the class.
         </xsd:documentation>
       </xsd:annotation>
     </xsd:attribute>
-    <xsd:attribute name="numberOfCompetitors" type="xsd:integer" use="optional">
+    <xsd:attribute name="numberOfCompetitors" type="xsd:integer">
       <xsd:annotation>
         <xsd:documentation>
           The number of competitors in the class. A competitor corresponds to a person (if an individual event) or a team (if a team or relay event).
         </xsd:documentation>
       </xsd:annotation>
     </xsd:attribute>
-    <xsd:attribute name="maxNumberOfCompetitors" type="xsd:integer" use="optional">
+    <xsd:attribute name="maxNumberOfCompetitors" type="xsd:integer">
       <xsd:annotation>
         <xsd:documentation>
           The maximum number of competitors that are allowed to take part in the class. A competitor corresponds to a person (if an individual event) or a team (if a team or relay event). If the maximum number of competitors varies between races in a multi-day event, use the maxNumberOfCompetitors attribute in the RaceClass element.
         </xsd:documentation>
       </xsd:annotation>
     </xsd:attribute>
-    <xsd:attribute name="resultListMode" use="optional" default="Default">
+    <xsd:attribute name="resultListMode" default="Default">
       <xsd:annotation>
         <xsd:documentation>
           Defines the kind of information to include in the result list, and how to sort it. For example, the result list of a beginner's class may include just "finished" or "did not finish" instead of the actual times.
@@ -1260,7 +1260,7 @@
         </xsd:restriction>
       </xsd:simpleType>
     </xsd:attribute>
-    <xsd:attribute name="modifyTime" type="xsd:dateTime" use="optional"/>
+    <xsd:attribute name="modifyTime" type="xsd:dateTime"/>
   </xsd:complexType>
 
   <xsd:complexType name="ClassType">
@@ -1279,7 +1279,7 @@
         </xsd:annotation>
       </xsd:element>
     </xsd:sequence>
-    <xsd:attribute name="modifyTime" type="xsd:dateTime" use="optional"/>
+    <xsd:attribute name="modifyTime" type="xsd:dateTime"/>
   </xsd:complexType>
 
   <xsd:simpleType name="EventClassStatus">
@@ -1437,21 +1437,21 @@
         </xsd:annotation>
       </xsd:element>
     </xsd:sequence>
-    <xsd:attribute name="raceNumber" type="xsd:integer" use="optional">
+    <xsd:attribute name="raceNumber" type="xsd:integer">
       <xsd:annotation>
         <xsd:documentation>
           The ordinal number of the race that the information belongs to for a multi-race event, starting at 1.
         </xsd:documentation>
       </xsd:annotation>
     </xsd:attribute>
-    <xsd:attribute name="maxNumberOfCompetitors" type="xsd:integer" use="optional">
+    <xsd:attribute name="maxNumberOfCompetitors" type="xsd:integer">
       <xsd:annotation>
         <xsd:documentation>
           The maximum number of competitors that are allowed to take part in the race class. A competitor corresponds to a person (if an individual event) or a team (if a team or relay event). This attribute overrides the maxNumberOfCompetitors attribute in the Class element.
         </xsd:documentation>
       </xsd:annotation>
     </xsd:attribute>
-    <xsd:attribute name="modifyTime" type="xsd:dateTime" use="optional"/>
+    <xsd:attribute name="modifyTime" type="xsd:dateTime"/>
   </xsd:complexType>
 
   <xsd:complexType name="Fee">
@@ -1462,7 +1462,7 @@
     </xsd:annotation>
     <xsd:sequence>
       <xsd:element name="Id" type="Id" minOccurs="0"/>
-      <xsd:element name="Name" type="LanguageString" minOccurs="1" maxOccurs="unbounded">
+      <xsd:element name="Name" type="LanguageString" maxOccurs="unbounded">
         <xsd:annotation>
           <xsd:documentation>
             A describing name of the fee, e.g. 'Late entry fee'.
@@ -1533,7 +1533,7 @@
         </xsd:annotation>
       </xsd:element>
     </xsd:sequence>
-    <xsd:attribute name="type" use="optional" default="Normal">
+    <xsd:attribute name="type" default="Normal">
       <xsd:annotation>
         <xsd:documentation>
           The type of fee.
@@ -1558,7 +1558,7 @@
         </xsd:restriction>
       </xsd:simpleType>
     </xsd:attribute>
-    <xsd:attribute name="modifyTime" type="xsd:dateTime" use="optional"/>
+    <xsd:attribute name="modifyTime" type="xsd:dateTime"/>
   </xsd:complexType>
 
   <xsd:complexType name="AssignedFee">
@@ -1590,7 +1590,7 @@
         </xsd:annotation>
       </xsd:element>
     </xsd:sequence>
-    <xsd:attribute name="modifyTime" type="xsd:dateTime" use="optional"/>
+    <xsd:attribute name="modifyTime" type="xsd:dateTime"/>
   </xsd:complexType>
 
   <xsd:complexType name="Amount">
@@ -1601,7 +1601,7 @@
     </xsd:annotation>
     <xsd:simpleContent>
       <xsd:extension base="xsd:decimal">
-        <xsd:attribute name="currency" type="xsd:string" use="optional"/>
+        <xsd:attribute name="currency" type="xsd:string"/>
       </xsd:extension>
     </xsd:simpleContent>
   </xsd:complexType>
@@ -1692,7 +1692,7 @@
         </xsd:annotation>
       </xsd:element>
     </xsd:sequence>
-    <xsd:attribute name="modifyTime" type="xsd:dateTime" use="optional"/>
+    <xsd:attribute name="modifyTime" type="xsd:dateTime"/>
   </xsd:complexType>
 
   <xsd:complexType name="TeamEntry">
@@ -1781,7 +1781,7 @@
         </xsd:annotation>
       </xsd:element>
     </xsd:sequence>
-    <xsd:attribute name="modifyTime" type="xsd:dateTime" use="optional"/>
+    <xsd:attribute name="modifyTime" type="xsd:dateTime"/>
   </xsd:complexType>
 
   <xsd:complexType name="TeamEntryPerson">
@@ -1872,7 +1872,7 @@
         </xsd:annotation>
       </xsd:element>
     </xsd:sequence>
-    <xsd:attribute name="type" use="optional" default="Normal">
+    <xsd:attribute name="type" default="Normal">
       <xsd:annotation>
         <xsd:documentation>
           The type of start time allocation request.
@@ -1970,14 +1970,14 @@
         </xsd:annotation>
       </xsd:element>
     </xsd:sequence>
-    <xsd:attribute name="timeResolution" type="xsd:double" use="optional" default="1">
+    <xsd:attribute name="timeResolution" type="xsd:double" default="1">
       <xsd:annotation>
         <xsd:documentation>
           The time resolution of the start times, normally 1. For tenths of a second, use 0.1.
         </xsd:documentation>
       </xsd:annotation>
     </xsd:attribute>
-    <xsd:attribute name="modifyTime" type="xsd:dateTime" use="optional"/>
+    <xsd:attribute name="modifyTime" type="xsd:dateTime"/>
   </xsd:complexType>
 
   <xsd:complexType name="StartName">
@@ -1988,7 +1988,7 @@
         </xsd:documentation>
       </xsd:annotation>
       <xsd:extension base="xsd:string">
-        <xsd:attribute name="raceNumber" type="xsd:integer" use="optional">
+        <xsd:attribute name="raceNumber" type="xsd:integer">
           <xsd:annotation>
             <xsd:documentation>
               The ordinal number of the race that the information belongs to for a multi-race event, starting at 1.
@@ -2027,7 +2027,7 @@
           </xsd:documentation>
         </xsd:annotation>
       </xsd:element>
-      <xsd:element name="Start" type="PersonRaceStart" minOccurs="1" maxOccurs="unbounded">
+      <xsd:element name="Start" type="PersonRaceStart" maxOccurs="unbounded">
         <xsd:annotation>
           <xsd:documentation>
             The core start information for the person; one element per race in the event.
@@ -2042,7 +2042,7 @@
         </xsd:annotation>
       </xsd:element>
     </xsd:sequence>
-    <xsd:attribute name="modifyTime" type="xsd:dateTime" use="optional"/>
+    <xsd:attribute name="modifyTime" type="xsd:dateTime"/>
   </xsd:complexType>
 
   <xsd:complexType name="PersonRaceStart">
@@ -2102,7 +2102,7 @@
         </xsd:annotation>
       </xsd:element>
     </xsd:sequence>
-    <xsd:attribute name="raceNumber" type="xsd:integer" use="optional">
+    <xsd:attribute name="raceNumber" type="xsd:integer">
       <xsd:annotation>
         <xsd:documentation>
           The ordinal number of the race that the information belongs to for a multi-race event, starting at 1.
@@ -2175,7 +2175,7 @@
         </xsd:annotation>
       </xsd:element>
     </xsd:sequence>
-    <xsd:attribute name="modifyTime" type="xsd:dateTime" use="optional"/>
+    <xsd:attribute name="modifyTime" type="xsd:dateTime"/>
   </xsd:complexType>
 
   <xsd:complexType name="TeamMemberStart">
@@ -2206,7 +2206,7 @@
           </xsd:documentation>
         </xsd:annotation>
       </xsd:element>
-      <xsd:element name="Start" type="TeamMemberRaceStart" minOccurs="1" maxOccurs="unbounded">
+      <xsd:element name="Start" type="TeamMemberRaceStart" maxOccurs="unbounded">
         <xsd:annotation>
           <xsd:documentation>
             The core start information for the team member; one element per race in the event.
@@ -2221,7 +2221,7 @@
         </xsd:annotation>
       </xsd:element>
     </xsd:sequence>
-    <xsd:attribute name="modifyTime" type="xsd:dateTime" use="optional"/>
+    <xsd:attribute name="modifyTime" type="xsd:dateTime"/>
   </xsd:complexType>
 
   <xsd:complexType name="TeamMemberRaceStart">
@@ -2295,7 +2295,7 @@
         </xsd:annotation>
       </xsd:element>
     </xsd:sequence>
-    <xsd:attribute name="raceNumber" type="xsd:integer" use="optional">
+    <xsd:attribute name="raceNumber" type="xsd:integer">
       <xsd:annotation>
         <xsd:documentation>
           The ordinal number of the race that the information belongs to for a multi-race event, starting at 1.
@@ -2347,14 +2347,14 @@
         </xsd:annotation>
       </xsd:element>
     </xsd:sequence>
-    <xsd:attribute name="timeResolution" type="xsd:double" use="optional" default="1">
+    <xsd:attribute name="timeResolution" type="xsd:double" default="1">
       <xsd:annotation>
         <xsd:documentation>
           The time resolution of the results, normally 1. For tenths of a second, use 0.1.
         </xsd:documentation>
       </xsd:annotation>
     </xsd:attribute>
-    <xsd:attribute name="modifyTime" type="xsd:dateTime" use="optional"/>
+    <xsd:attribute name="modifyTime" type="xsd:dateTime"/>
   </xsd:complexType>
 
   <xsd:complexType name="PersonResult">
@@ -2400,7 +2400,7 @@
         </xsd:annotation>
       </xsd:element>
     </xsd:sequence>
-    <xsd:attribute name="modifyTime" type="xsd:dateTime" use="optional"/>
+    <xsd:attribute name="modifyTime" type="xsd:dateTime"/>
   </xsd:complexType>
 
   <xsd:complexType name="PersonRaceResult">
@@ -2530,7 +2530,7 @@
         </xsd:annotation>
       </xsd:element>
     </xsd:sequence>
-    <xsd:attribute name="raceNumber" type="xsd:integer" use="optional">
+    <xsd:attribute name="raceNumber" type="xsd:integer">
       <xsd:annotation>
         <xsd:documentation>
           The ordinal number of the race that the information belongs to for a multi-race event, starting at 1.
@@ -2648,7 +2648,7 @@
         </xsd:annotation>
       </xsd:element>
     </xsd:sequence>
-    <xsd:attribute name="modifyTime" type="xsd:dateTime" use="optional"/>
+    <xsd:attribute name="modifyTime" type="xsd:dateTime"/>
   </xsd:complexType>
 
   <xsd:complexType name="TeamMemberRaceResult">
@@ -2706,7 +2706,7 @@
             The time, in seconds, that the the team member is behind the winner. Fractions of seconds (e.g. 258.7) may be used if the time resolution is higher than one second.
           </xsd:documentation>
         </xsd:annotation>
-        <xsd:complexType mixed="false">
+        <xsd:complexType>
           <xsd:simpleContent>
             <xsd:extension base="xsd:double">
               <xsd:attribute name="type" use="required">
@@ -2739,7 +2739,7 @@
             The position in the result list for the person that the result belongs to. This element should only be present when the Status element is set to OK.
           </xsd:documentation>
         </xsd:annotation>
-        <xsd:complexType mixed="false">
+        <xsd:complexType>
           <xsd:simpleContent>
             <xsd:extension base="xsd:integer">
               <xsd:attribute name="type" use="required">
@@ -2844,7 +2844,7 @@
         </xsd:annotation>
       </xsd:element>
     </xsd:sequence>
-    <xsd:attribute name="raceNumber" type="xsd:integer" use="optional">
+    <xsd:attribute name="raceNumber" type="xsd:integer">
       <xsd:annotation>
         <xsd:documentation>
           The ordinal number of the race that the information belongs to for a multi-race event, starting at 1.
@@ -3082,7 +3082,7 @@
         </xsd:annotation>
       </xsd:element>
     </xsd:sequence>
-    <xsd:attribute name="status" use="optional" default="OK">
+    <xsd:attribute name="status" default="OK">
       <xsd:annotation>
         <xsd:documentation>
           The status of the split time.
@@ -3224,14 +3224,14 @@
         </xsd:annotation>
       </xsd:element>
     </xsd:sequence>
-    <xsd:attribute name="minNumberOfCompetitors" type="xsd:integer" use="optional" default="1">
+    <xsd:attribute name="minNumberOfCompetitors" type="xsd:integer" default="1">
       <xsd:annotation>
         <xsd:documentation>
           The minimum number of competitors in case of a parallel leg.
         </xsd:documentation>
       </xsd:annotation>
     </xsd:attribute>
-    <xsd:attribute name="maxNumberOfCompetitors" type="xsd:integer" use="optional" default="1">
+    <xsd:attribute name="maxNumberOfCompetitors" type="xsd:integer" default="1">
       <xsd:annotation>
         <xsd:documentation>
           The maximum number of competitors in case of a parallel leg.
@@ -3290,14 +3290,14 @@
         </xsd:annotation>
       </xsd:element>
     </xsd:sequence>
-    <xsd:attribute name="type" type="ControlType" use="optional" default="Control">
+    <xsd:attribute name="type" type="ControlType">
       <xsd:annotation>
         <xsd:documentation>
           The type of the control: (ordinary) control, start, finish, crossing point or end of marked route. This attribute can be overridden on the CourseControl level.
         </xsd:documentation>
       </xsd:annotation>
     </xsd:attribute>
-    <xsd:attribute name="modifyTime" type="xsd:dateTime" use="optional"/>
+    <xsd:attribute name="modifyTime" type="xsd:dateTime"/>
   </xsd:complexType>
 
   <xsd:complexType name="GeoPosition">
@@ -3320,7 +3320,7 @@
         </xsd:documentation>
       </xsd:annotation>
     </xsd:attribute>
-    <xsd:attribute name="alt" type="xsd:double" use="optional">
+    <xsd:attribute name="alt" type="xsd:double">
       <xsd:annotation>
         <xsd:documentation>
           The altitude (elevation above sea level), in meters.
@@ -3383,7 +3383,7 @@
         </xsd:documentation>
       </xsd:annotation>
       <xsd:extension base="xsd:base64Binary">
-        <xsd:attribute name="url" type="xsd:string" use="optional">
+        <xsd:attribute name="url" type="xsd:string">
           <xsd:annotation>
             <xsd:documentation>
               The url to the image if it is stored externally (i.e. not as base64-encoded binary data).
@@ -3397,21 +3397,21 @@
             </xsd:documentation>
           </xsd:annotation>
         </xsd:attribute>
-        <xsd:attribute name="width" type="xsd:integer" use="optional">
+        <xsd:attribute name="width" type="xsd:integer">
           <xsd:annotation>
             <xsd:documentation>
               The width of the image in pixels.
             </xsd:documentation>
           </xsd:annotation>
         </xsd:attribute>
-        <xsd:attribute name="height" type="xsd:integer" use="optional">
+        <xsd:attribute name="height" type="xsd:integer">
           <xsd:annotation>
             <xsd:documentation>
               The height of the image in pixels.
             </xsd:documentation>
           </xsd:annotation>
         </xsd:attribute>
-        <xsd:attribute name="resolution" type="xsd:double" use="optional">
+        <xsd:attribute name="resolution" type="xsd:double">
           <xsd:annotation>
             <xsd:documentation>
               The resolution of the image in dpi.
@@ -3442,7 +3442,7 @@
         </xsd:documentation>
       </xsd:annotation>
     </xsd:attribute>
-    <xsd:attribute name="unit" use="optional" default="mm">
+    <xsd:attribute name="unit" default="mm">
       <xsd:annotation>
         <xsd:documentation>
           The type of unit used.
@@ -3526,7 +3526,7 @@
         </xsd:annotation>
       </xsd:element>
     </xsd:sequence>
-    <xsd:attribute name="raceNumber" type="xsd:integer" use="optional">
+    <xsd:attribute name="raceNumber" type="xsd:integer">
       <xsd:annotation>
         <xsd:documentation>
           The ordinal number of the race that the information belongs to for a multi-race event, starting at 1.
@@ -3585,7 +3585,7 @@
         </xsd:annotation>
       </xsd:element>
     </xsd:sequence>
-    <xsd:attribute name="numberOfCompetitors" type="xsd:integer" use="optional">
+    <xsd:attribute name="numberOfCompetitors" type="xsd:integer">
       <xsd:annotation>
         <xsd:documentation>
           The number of competitors in the class. A competitor corresponds to a person (if an individual event) or a team (if a team or relay event).
@@ -3822,14 +3822,14 @@
         </xsd:annotation>
       </xsd:element>
     </xsd:sequence>
-    <xsd:attribute name="numberOfCompetitors" type="xsd:integer" use="optional">
+    <xsd:attribute name="numberOfCompetitors" type="xsd:integer">
       <xsd:annotation>
         <xsd:documentation>
           The number of competitors that this course has been assigned to.
         </xsd:documentation>
       </xsd:annotation>
     </xsd:attribute>
-    <xsd:attribute name="modifyTime" type="xsd:dateTime" use="optional"/>
+    <xsd:attribute name="modifyTime" type="xsd:dateTime"/>
   </xsd:complexType>
 
   <xsd:complexType name="SimpleCourse">
@@ -3886,7 +3886,7 @@
     </xsd:annotation>
     <xsd:complexContent>
       <xsd:extension base="SimpleCourse">
-        <xsd:attribute name="raceNumber" type="xsd:integer" use="optional">
+        <xsd:attribute name="raceNumber" type="xsd:integer">
           <xsd:annotation>
             <xsd:documentation>
               The ordinal number of the race that the information belongs to for a multi-race event, starting at 1.
@@ -3904,7 +3904,7 @@
       </xsd:documentation>
     </xsd:annotation>
     <xsd:sequence>
-      <xsd:element name="Control" type="xsd:string" minOccurs="1" maxOccurs="unbounded">
+      <xsd:element name="Control" type="xsd:string" maxOccurs="unbounded">
         <xsd:annotation>
           <xsd:documentation>
             The code(s) of the control(s), without course-specific information. Specifying multiple control codes means that the competitor is required to punch one of the controls, but not all of them.
@@ -3947,21 +3947,21 @@
         </xsd:annotation>
       </xsd:element>
     </xsd:sequence>
-    <xsd:attribute name="type" type="ControlType" use="optional">
+    <xsd:attribute name="type" type="ControlType">
       <xsd:annotation>
         <xsd:documentation>
           The type of the control: (ordinary) control, start, finish, crossing point or end of marked route. If this attribute is specified, it overrides the corresponding Control's type.
         </xsd:documentation>
       </xsd:annotation>
     </xsd:attribute>
-    <xsd:attribute name="randomOrder" type="xsd:boolean" use="optional" default="false">
+    <xsd:attribute name="randomOrder" type="xsd:boolean" default="false">
       <xsd:annotation>
         <xsd:documentation>
           Non-broken sequences of course controls having randomOrder set to true can be visited in an arbitrary order.
         </xsd:documentation>
       </xsd:annotation>
     </xsd:attribute>
-    <xsd:attribute name="specialInstruction" use="optional" default="None">
+    <xsd:attribute name="specialInstruction" default="None">
       <xsd:annotation>
         <xsd:documentation>
           Any special instruction applied at the control, see the column G as defined in International Specification for Control Descriptions.
@@ -3977,14 +3977,14 @@
         </xsd:restriction>
       </xsd:simpleType>
     </xsd:attribute>
-    <xsd:attribute name="tapedRouteLength" type="xsd:double" use="optional">
+    <xsd:attribute name="tapedRouteLength" type="xsd:double">
       <xsd:annotation>
         <xsd:documentation>
           The length of the taped route in meters. Only to be specified if specialInstruction is TapedRoute or FunnelTapedRoute and if different from the value specified in LegLength element, i.e. when Special Instruction 13.1 is used.
         </xsd:documentation>
       </xsd:annotation>
     </xsd:attribute>
-    <xsd:attribute name="modifyTime" type="xsd:dateTime" use="optional"/>
+    <xsd:attribute name="modifyTime" type="xsd:dateTime"/>
   </xsd:complexType>
 
   <xsd:simpleType name="ControlType">
@@ -4010,7 +4010,7 @@
     </xsd:annotation>
     <xsd:sequence>
       <xsd:element name="Id" type="Id" minOccurs="0"/>
-      <xsd:element name="Name" type="LanguageString" minOccurs="1" maxOccurs="unbounded">
+      <xsd:element name="Name" type="LanguageString" maxOccurs="unbounded">
         <xsd:annotation>
           <xsd:documentation>
             The name of the service.
@@ -4053,14 +4053,14 @@
         </xsd:annotation>
       </xsd:element>
     </xsd:sequence>
-    <xsd:attribute name="type" type="xsd:string" use="optional">
+    <xsd:attribute name="type" type="xsd:string">
       <xsd:annotation>
         <xsd:documentation>
           Used to mark special services, e.g. rental cards whose fees that are to be used in entry scenarios.
         </xsd:documentation>
       </xsd:annotation>
     </xsd:attribute>
-    <xsd:attribute name="modifyTime" type="xsd:dateTime" use="optional"/>
+    <xsd:attribute name="modifyTime" type="xsd:dateTime"/>
   </xsd:complexType>
 
   <xsd:complexType name="OrganisationServiceRequest">
@@ -4164,10 +4164,10 @@
         </xsd:annotation>
       </xsd:element>
     </xsd:sequence>
-    <xsd:attribute name="modifyTime" type="xsd:dateTime" use="optional"/>
+    <xsd:attribute name="modifyTime" type="xsd:dateTime"/>
   </xsd:complexType>
 
-  <xsd:complexType name="Account" mixed="false">
+  <xsd:complexType name="Account">
     <xsd:annotation>
       <xsd:documentation>
         The bank account of an organisation or an event.
@@ -4175,7 +4175,7 @@
     </xsd:annotation>
     <xsd:simpleContent>
       <xsd:extension base="xsd:string">
-        <xsd:attribute name="type" type="xsd:string" use="optional">
+        <xsd:attribute name="type" type="xsd:string">
           <xsd:annotation>
             <xsd:documentation>
               The account type.
@@ -4200,17 +4200,17 @@
       <xsd:element name="State" type="xsd:string" minOccurs="0"/>
       <xsd:element name="Country" type="Country" minOccurs="0"/>
     </xsd:sequence>
-    <xsd:attribute name="type" type="xsd:string" use="optional">
+    <xsd:attribute name="type" type="xsd:string">
       <xsd:annotation>
         <xsd:documentation>
           The address type, e.g. visitor address or invoice address.
         </xsd:documentation>
       </xsd:annotation>
     </xsd:attribute>
-    <xsd:attribute name="modifyTime" type="xsd:dateTime" use="optional"/>
+    <xsd:attribute name="modifyTime" type="xsd:dateTime"/>
   </xsd:complexType>
 
-  <xsd:complexType name="Country" mixed="false">
+  <xsd:complexType name="Country">
     <xsd:annotation>
       <xsd:documentation>
         Defines the name of the country.
@@ -4249,7 +4249,7 @@
             </xsd:restriction>
           </xsd:simpleType>
         </xsd:attribute>
-        <xsd:attribute name="modifyTime" type="xsd:dateTime" use="optional"/>
+        <xsd:attribute name="modifyTime" type="xsd:dateTime"/>
       </xsd:extension>
     </xsd:simpleContent>
   </xsd:complexType>
@@ -4286,7 +4286,7 @@
     </xsd:annotation>
     <xsd:simpleContent>
       <xsd:extension base="xsd:string">
-        <xsd:attribute name="language" type="xsd:string" use="optional">
+        <xsd:attribute name="language" type="xsd:string">
           <xsd:annotation>
             <xsd:documentation>
               The ISO 639-1 two-letter code of the language as stated in https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes.
