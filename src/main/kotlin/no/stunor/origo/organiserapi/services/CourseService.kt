@@ -1,32 +1,112 @@
 package no.stunor.origo.organiserapi.services
 
 import com.google.cloud.firestore.GeoPoint
+import no.stunor.origo.organiserapi.exception.EventNotFoundException
+import no.stunor.origo.organiserapi.data.CoursesRepository
+import no.stunor.origo.organiserapi.data.EventRepository
 import no.stunor.origo.organiserapi.model.courses.Control
 import no.stunor.origo.organiserapi.model.courses.ControlType
+import no.stunor.origo.organiserapi.model.courses.Course
+import no.stunor.origo.organiserapi.model.courses.CourseVariant
+import no.stunor.origo.organiserapi.model.courses.Leg
 import no.stunor.origo.organiserapi.model.courses.Map
 import no.stunor.origo.organiserapi.model.courses.MapPosition
 import no.stunor.origo.organiserapi.model.courses.Position
+import no.stunor.origo.organiserapi.model.event.EventClass
+import org.iof.ClassCourseAssignment
 import org.iof.CourseData
+import org.iof.RaceCourseData
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 
 @Service
 class CourseService {
 
-    fun saveCourse(record: String, eventId: String, raceId: String, courseData: CourseData) {
+    @Autowired
+    private lateinit var eventRepository: EventRepository
+
+    @Autowired
+    private lateinit var coursesRepository: CoursesRepository
+
+    fun saveCourse(eventorId: String, eventId: String, raceId: String, courseData: CourseData) {
         if (courseData.raceCourseData.isEmpty()) {
             return
         }
-        var map: Map = Map(
+        val event = eventRepository.findByEventIdAndEventorId(eventId, eventorId) ?: throw EventNotFoundException()
+        val map = Map(
             raceId = raceId,
             scale = courseData.raceCourseData.first().map.first()?.scale,
             mapPosition = getMapPosition(courseData.raceCourseData.first().map.firstOrNull()),
             controls = getControls(courseData.raceCourseData.first()),
-            courses = listOf()
+            courses = getCourses(courseData.raceCourseData.first(), event.eventClasses)
+        )
+        event.id?.let { coursesRepository.save(it, map) }
+
+    }
+
+    private fun getCourses(raceData: RaceCourseData, eventClasses: List<EventClass>?): List<Course> {
+        val courses = mutableListOf<Course>()
+        for(course in raceData.course) {
+            if(!course.courseFamily.isNullOrBlank() && courses.any { it.name == course.courseFamily }) {
+               courses.first { it.name == course.courseFamily }.variants.add(
+                   CourseVariant(
+                       name = course.name,
+                       length = course.length,
+                       climb = course.climb,
+                       controls = getLegs(course.courseControl),
+                       classes = getClasses(course, raceData.classCourseAssignment, eventClasses)
+                   )
+               )
+            } else {
+                courses.add(getCourse(course, raceData.classCourseAssignment, eventClasses))
+            }
+        }
+        return courses
+    }
+
+    private fun getCourse(
+        course: org.iof.Course,
+        classCourseAssignment: List<ClassCourseAssignment>,
+        eventClasses: List<EventClass>?, ): Course {
+        return Course(
+            name = if(course.courseFamily.isNullOrBlank()) course.name else course.courseFamily,
+            variants = mutableListOf(
+                CourseVariant(
+                    name =  if(!course.courseFamily.isNullOrBlank()) course.name else null,
+                    length = course.length,
+                    climb = course.climb,
+                    controls = getLegs(course.courseControl),
+                    classes = getClasses(course, classCourseAssignment, eventClasses)
+                )
+            )
         )
 
     }
 
-    private fun getControls(raceData: org.iof.RaceCourseData): List<Control> {
+    private fun getClasses(
+        course: org.iof.Course,
+        classCourseAssignment: List<ClassCourseAssignment>,
+        eventClasses: List<EventClass>?
+    ): List<String> {
+        val classNames = classCourseAssignment.filter { it.courseName == course.name }.map { it.className.uppercase() }
+        return eventClasses?.filter { classNames.contains(it.name.uppercase()) }?.map { it.eventClassId } ?: listOf()
+    }
+
+    private fun getLegs(courseControls: List<org.iof.CourseControl>): List<Leg> {
+        val legs = mutableListOf<Leg>()
+        for (leg in courseControls) {
+            legs.add(
+                Leg(
+                    controlCodes = leg.control,
+                    mapText = leg.mapText,
+                    lengt = leg.legLength
+                )
+            )
+        }
+        return legs
+    }
+
+    private fun getControls(raceData: RaceCourseData): List<Control> {
       val controls = mutableListOf<Control>()
         for(control in raceData.control) {
             controls.add(getControl(control, raceData.course))

@@ -19,7 +19,6 @@ internal class CoursesController {
         @RequestBody(required = true) courseData: CourseData
     ) {
         courseService.saveCourse(eventorId, eventId, raceId, courseData)
-        //TODO
     }
 
 }
