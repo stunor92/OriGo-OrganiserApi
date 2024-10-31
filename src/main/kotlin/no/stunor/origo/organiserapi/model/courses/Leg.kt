@@ -1,7 +1,7 @@
 package no.stunor.origo.organiserapi.model.courses
 
 data class Leg(
-        var controlCode: String,
+        var controlCodes: List<String>,
         var mapText: String?,
-        var lengt: Int?
+        var lengt: Double?
 )
