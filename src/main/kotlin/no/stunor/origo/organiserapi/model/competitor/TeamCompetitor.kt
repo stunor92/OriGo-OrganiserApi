@@ -1,24 +1,22 @@
 package no.stunor.origo.organiserapi.model.competitor
 
 import com.fasterxml.jackson.annotation.JsonIgnore
-import com.google.cloud.Timestamp
-import com.google.cloud.firestore.annotation.DocumentId
 import no.stunor.origo.organiserapi.model.organisation.Organisation
+import java.sql.Timestamp
 
 data class TeamCompetitor(
-        @DocumentId
-        override var id: String? = null,
-        @JsonIgnore
+    override var id: String? = null,
+    @JsonIgnore
         override var raceId: String = "",
-        override var eventClassId: String = "",
-        var organisations: List<Organisation> = listOf(),
-        var teamMembers: List<TeamMemberCompetitor> = listOf(),
-        override var name: Any = "",
-        override var bib: String? = null,
-        override var status: CompetitorStatus,
-        override var startTime: Timestamp? = null,
-        override var finishTime: Timestamp? = null,
-        var result: Result? = null,
+    override var eventClassId: String = "",
+    var organisations: List<Organisation> = listOf(),
+    var teamMembers: List<TeamMemberCompetitor> = listOf(),
+    override var name: Any = "",
+    override var bib: String? = null,
+    override var status: CompetitorStatus,
+    override var startTime: Timestamp? = null,
+    override var finishTime: Timestamp? = null,
+    var result: Result? = null,
 ) : Competitor {
         override fun equals(other: Any?): Boolean {
                 return if(other is TeamCompetitor){

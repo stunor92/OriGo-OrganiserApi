@@ -1,6 +1,5 @@
 package no.stunor.origo.organiserapi.controller
 
-import com.google.cloud.Timestamp
 import no.stunor.origo.organiserapi.model.competitor.Competitor
 import no.stunor.origo.organiserapi.model.competitor.CompetitorStatus
 import no.stunor.origo.organiserapi.model.competitor.PersonCompetitor
@@ -16,10 +15,14 @@ import no.stunor.origo.organiserapi.model.person.PersonName
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
+import java.sql.Timestamp
+import kotlin.time.ExperimentalTime
+import kotlin.time.Instant
 
 @RestController
 internal class ResultController {
 
+    @OptIn(ExperimentalTime::class)
     @PostMapping("/result/{eventorId}/{eventId}/{raceId}")
     fun postResult(
         @PathVariable(value = "eventorId") eventorId: String,
@@ -51,8 +54,8 @@ internal class ResultController {
             ),
             bib = null,
             status = CompetitorStatus.Finished,
-            startTime = Timestamp.now(),
-            finishTime = Timestamp.now(),
+            startTime = null,
+            finishTime = null,
             result = Result(
                 time = 1234,
                 timeBehind = 0,

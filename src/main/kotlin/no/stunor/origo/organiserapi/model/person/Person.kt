@@ -1,11 +1,9 @@
 package no.stunor.origo.organiserapi.model.person
 
 import com.fasterxml.jackson.annotation.JsonIgnore
-import com.google.cloud.firestore.annotation.DocumentId
 import java.io.Serializable
 
 data class Person(
-        @DocumentId
         var id: String? = null,
         var eventorId: String = "",
         var personId: String = "",

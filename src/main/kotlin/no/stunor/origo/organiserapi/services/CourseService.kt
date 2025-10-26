@@ -1,6 +1,5 @@
 package no.stunor.origo.organiserapi.services
 
-import com.google.cloud.firestore.GeoPoint
 import no.stunor.origo.organiserapi.exception.EventNotFoundException
 import no.stunor.origo.organiserapi.data.CoursesRepository
 import no.stunor.origo.organiserapi.data.EventRepository
@@ -118,7 +117,7 @@ class CourseService {
         return Control(
             type = getControlType(control, courses),
             controlCode = control.id.value,
-            position = getGeoPoint(control.position),
+            position = 1,//getGeoPoint(control.position),
             mapPosition = getPosition(control.mapPosition)
         )
     }
@@ -147,12 +146,12 @@ class CourseService {
         }
     }
 
-    private fun getGeoPoint(position: org.iof.GeoPosition?): GeoPoint? {
+    /*private fun getGeoPoint(position: org.iof.GeoPosition?): GeoPoint? {
         if (position == null) {
             return null
         }
         return GeoPoint(position.lat, position.lng)
-    }
+    }*/
 
     private fun getMapPosition(map: org.iof.Map?): MapPosition? {
         if (map == null) {
