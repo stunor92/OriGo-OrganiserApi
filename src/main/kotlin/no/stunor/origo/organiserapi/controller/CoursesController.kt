@@ -5,6 +5,7 @@ import org.iof.CourseData
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.*
+import java.util.UUID
 
 @RestController
 internal class CoursesController {
@@ -13,17 +14,15 @@ internal class CoursesController {
     @Autowired
     private lateinit var courseService: CourseService
 
-    @PostMapping("/courses/{eventorId}/{eventId}/{raceId}")
+    @PostMapping("/courses/{raceId}")
     fun postResult(
-        @PathVariable(value = "eventorId") eventorId: String,
-        @PathVariable(value = "eventId") eventId: String,
-        @PathVariable(value = "raceId") raceId: String,
+        @PathVariable(value = "raceId") raceId: UUID,
         @RequestBody(required = true) courseData: CourseData
     ) {
-        log.info("Saving course for eventorId: $eventorId, eventId: $eventId, raceId: $raceId")
+        log.info("Saving course for raceId: $raceId")
         log.info("Course data: $courseData")
 
-        courseService.saveCourse(eventorId, eventId, raceId, courseData)
+        courseService.saveCourse(raceId, courseData)
     }
 
 }

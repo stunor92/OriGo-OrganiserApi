@@ -12,18 +12,37 @@ springdoc:
     path: /api-docs
   swagger-ui:
     path: /documentation.html
+spring:
+  datasource:
+    url: ${POSTGRES_DB}
+    username: ${POSTGRES_USER}
+    password: ${POSTGRES_PASSWORD}
+    driverClassName: org.postgresql.Driver
+    hikari:
+      data-source-properties:
+        stringtype: unspecified
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+  mvc:
+    format:
+      date: yyyy-MM-dd
 management:
   endpoints:
     web:
       exposure:
-        include: 
+        include:
           - loggers
           - health
           - metrics
   endpoint:
     loggers:
-      enabled: true
+      access: read_only
     health:
-      enabled: true
+      access: read_only
     metrics:
-      enabled: true
+      access: read_only
+config:
+  jwt:
+    secret: ${JWT_SECRET:super-secret-jwt-token-with-at-least-32-characters-long}
