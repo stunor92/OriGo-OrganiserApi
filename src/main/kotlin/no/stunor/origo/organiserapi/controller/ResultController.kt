@@ -1,13 +1,6 @@
 package no.stunor.origo.organiserapi.controller
 
-import com.google.cloud.Timestamp
-import no.stunor.origo.organiserapi.model.competitor.Competitor
-import no.stunor.origo.organiserapi.model.competitor.CompetitorStatus
-import no.stunor.origo.organiserapi.model.competitor.PersonCompetitor
-import no.stunor.origo.organiserapi.model.competitor.PunchingUnit
-import no.stunor.origo.organiserapi.model.competitor.PunchingUnitType
-import no.stunor.origo.organiserapi.model.competitor.Result
-import no.stunor.origo.organiserapi.model.competitor.ResultStatus
+import no.stunor.origo.organiserapi.model.competitor.*
 import no.stunor.origo.organiserapi.model.emit.EmitRecord
 import no.stunor.origo.organiserapi.model.organisation.Organisation
 import no.stunor.origo.organiserapi.model.organisation.OrganisationType
@@ -15,7 +8,10 @@ import no.stunor.origo.organiserapi.model.person.Gender
 import no.stunor.origo.organiserapi.model.person.PersonName
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.*
+import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.RestController
 
 @RestController
 internal class ResultController {
@@ -51,8 +47,8 @@ internal class ResultController {
             ),
             bib = null,
             status = CompetitorStatus.Finished,
-            startTime = Timestamp.now(),
-            finishTime = Timestamp.now(),
+            startTime = null,
+            finishTime = null,
             result = Result(
                 time = 1234,
                 timeBehind = 0,

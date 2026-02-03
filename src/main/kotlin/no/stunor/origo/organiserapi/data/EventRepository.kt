@@ -1,26 +1,55 @@
 package no.stunor.origo.organiserapi.data
 
-import com.google.api.core.ApiFuture
-import com.google.cloud.firestore.QuerySnapshot
-import com.google.firebase.cloud.FirestoreClient
 import no.stunor.origo.organiserapi.model.event.Event
+import no.stunor.origo.organiserapi.model.event.EventClass
+import org.springframework.jdbc.core.JdbcTemplate
+import org.springframework.jdbc.core.RowMapper
 import org.springframework.stereotype.Repository
-
+import java.sql.ResultSet
+import java.util.*
 
 @Repository
-class EventRepository {
-    private val firestore = FirestoreClient.getFirestore()
+open class EventRepository(private val jdbcTemplate: JdbcTemplate) {
 
-    fun findByEventIdAndEventorId(eventId: String, eventorId: String): Event? {
-        val future: ApiFuture<QuerySnapshot> = firestore.collection("events")
-            .whereEqualTo("eventId", eventId)
-            .whereEqualTo("eventorId", eventorId)
-            .get()
-
-        return if(future.get().isEmpty){
-            null
-        } else {
-            future.get().documents.first().toObject(Event::class.java)
-        }
+    private val eventRowMapper = RowMapper { rs: ResultSet, _: Int ->
+        Event(
+            id = UUID.fromString(rs.getString("id")),
+            eventorId = rs.getString("eventor_id") ?: "",
+            eventorRef = rs.getString("eventor_ref") ?: "",
+            name = rs.getString("name") ?: "",
+            startDate = rs.getTimestamp("start_date"),
+            finishDate = rs.getTimestamp("finish_date")
+        )
     }
+
+    private val classRowMapper = RowMapper { rs: ResultSet, _: Int ->
+        EventClass(
+            id = UUID.fromString(rs.getString("id")),
+            eventorRef = rs.getString("eventor_ref") ?: "",
+            name = rs.getString("name") ?: "",
+            shortName = rs.getString("short_name") ?: ""
+        )
+    }
+
+    open fun findById(id: UUID): Event? {
+        val event = try {
+            jdbcTemplate.queryForObject(
+                "SELECT * FROM event WHERE id = ?",
+                eventRowMapper,
+                id
+            )
+        } catch (_: Exception) {
+            return null
+        }
+
+        // Load classes
+        event.classes = jdbcTemplate.query(
+            "SELECT * FROM class WHERE event_id = ?",
+            classRowMapper,
+            id
+        ).toMutableSet()
+
+        return event
+    }
+
 }

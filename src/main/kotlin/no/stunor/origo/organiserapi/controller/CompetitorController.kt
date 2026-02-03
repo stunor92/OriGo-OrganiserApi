@@ -1,6 +1,5 @@
 package no.stunor.origo.organiserapi.controller
 
-import com.google.cloud.Timestamp
 import no.stunor.origo.organiserapi.model.competitor.Competitor
 import no.stunor.origo.organiserapi.model.competitor.CompetitorStatus
 import no.stunor.origo.organiserapi.model.competitor.PersonCompetitor
@@ -61,8 +60,8 @@ internal class CompetitorController {
             ),
             bib = null,
             status = CompetitorStatus.Finished,
-            startTime = Timestamp.now(),
-            finishTime = Timestamp.now(),
+            startTime = null,
+            finishTime = null,
             result = Result(
                 time = 1234,
                 timeBehind = 0,

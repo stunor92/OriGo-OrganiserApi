@@ -1,15 +1,19 @@
 package no.stunor.origo.organiserapi.model.event
 
-import com.fasterxml.jackson.annotation.JsonIgnore
-import com.google.cloud.firestore.annotation.DocumentId
-import java.io.Serializable
+import java.sql.Timestamp
 import java.util.*
 
-data class Event (
-        @JsonIgnore
-        @DocumentId
-        var id: String? = null,
-        var eventorId: String? = null,
-        var eventId: String = "",
-        var eventClasses: List<EventClass> = ArrayList(),
-) : Serializable
+data class Event(
+    var id: UUID = UUID.randomUUID(),
+    var eventorId: String = "",
+    var eventorRef: String = "",
+    var name: String = "",
+    var startDate: Timestamp? = null,
+    var finishDate: Timestamp? = null,
+    var classes: MutableSet<EventClass> = mutableSetOf()
+) {
+    override fun toString(): String {
+        return "Event(name='$name')"
+    }
+}
+

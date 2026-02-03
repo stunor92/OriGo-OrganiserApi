@@ -1,11 +1,13 @@
 package no.stunor.origo.organiserapi.model.event
 
-import java.util.*
+import java.sql.Timestamp
+import java.util.UUID
 
-data class EventClass(
+data class Race(
     var id: UUID = UUID.randomUUID(),
     var eventorRef: String = "",
     var name: String = "",
-    var shortName: String = ""
+    var date: Timestamp? = null,
+    var eventId: UUID
 )
 

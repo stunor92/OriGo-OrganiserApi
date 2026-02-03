@@ -1,7 +1,15 @@
 package no.stunor.origo.organiserapi.model.courses
 
-data class Leg(
-        var controlCodes: List<String>,
-        var mapText: String?,
-        var lengt: Double?
-)
+import java.util.*
+
+data class Leg (
+    var id: UUID? = null,
+    var sequenceNumber: Int = 0,
+    var courseVariantId: UUID? = null,
+    var length: Double? = null
+) {
+    override fun toString(): String {
+        return "Leg(sequenceNumber=$sequenceNumber)"
+    }
+}
+

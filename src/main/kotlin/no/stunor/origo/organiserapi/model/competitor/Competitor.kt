@@ -1,8 +1,7 @@
 package no.stunor.origo.organiserapi.model.competitor
 
-import com.fasterxml.jackson.annotation.JsonIgnore
-import com.google.cloud.Timestamp
 import io.swagger.v3.oas.annotations.media.Schema
+import java.sql.Timestamp
 
 @Schema(subTypes = [PersonCompetitor::class,TeamCompetitor::class])
 interface Competitor {

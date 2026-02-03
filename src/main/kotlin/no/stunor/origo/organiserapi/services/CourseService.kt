@@ -1,114 +1,260 @@
 package no.stunor.origo.organiserapi.services
 
-import com.google.cloud.firestore.GeoPoint
+import no.stunor.origo.organiserapi.data.*
 import no.stunor.origo.organiserapi.exception.EventNotFoundException
-import no.stunor.origo.organiserapi.data.CoursesRepository
-import no.stunor.origo.organiserapi.data.EventRepository
-import no.stunor.origo.organiserapi.model.courses.Control
-import no.stunor.origo.organiserapi.model.courses.ControlType
-import no.stunor.origo.organiserapi.model.courses.Course
-import no.stunor.origo.organiserapi.model.courses.CourseVariant
-import no.stunor.origo.organiserapi.model.courses.Leg
-import no.stunor.origo.organiserapi.model.courses.Map
-import no.stunor.origo.organiserapi.model.courses.MapPosition
-import no.stunor.origo.organiserapi.model.courses.Position
+import no.stunor.origo.organiserapi.model.courses.*
 import no.stunor.origo.organiserapi.model.event.EventClass
 import org.iof.ClassCourseAssignment
 import org.iof.CourseData
 import org.iof.RaceCourseData
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
+import java.util.*
 
 @Service
-class CourseService {
+open class CourseService {
 
     @Autowired
     private lateinit var eventRepository: EventRepository
 
     @Autowired
-    private lateinit var coursesRepository: CoursesRepository
+    private lateinit var raceRepository: RaceRepository
 
-    fun saveCourse(eventorId: String, eventId: String, raceId: String, courseData: CourseData) {
-        if (courseData.raceCourseData.isEmpty()) {
-            return
+    @Autowired
+    private lateinit var mapRepository: MapRepository
+
+    @Autowired
+    private lateinit var controlRepository: ControlRepository
+
+    @Autowired
+    private lateinit var courseRepository: CourseRepository
+
+    @Autowired
+    private lateinit var legRepository: LegRepository
+
+    @Autowired
+    private lateinit var classCourseRepository: ClassCourseRepository
+
+    @Autowired
+    private lateinit var legControlRepository: LegControlRepository
+
+    @Transactional
+    open fun saveCourse(raceId: UUID, name: String, courseData: CourseData) {
+
+        require(!(courseData.raceCourseData.isNullOrEmpty())) {
+            "CourseData must contain at least one RaceCourseData element."
         }
-        val event = eventRepository.findByEventIdAndEventorId(eventId, eventorId) ?: throw EventNotFoundException()
-        val map = Map(
-            raceId = raceId,
-            scale = courseData.raceCourseData.first().map.first()?.scale,
-            mapPosition = getMapPosition(courseData.raceCourseData.first().map.firstOrNull()),
-            controls = getControls(courseData.raceCourseData.first()),
-            courses = getCourses(courseData.raceCourseData.first(), event.eventClasses)
+
+        // Get the race from database
+        val race = raceRepository.findById(raceId) ?: throw EventNotFoundException()
+
+        // Get event from database to match classes
+        val event = eventRepository.findById(race.eventId) ?: throw EventNotFoundException()
+
+        // Get the IOF event data from the XML (contains class definitions)
+        val iofEvent = courseData.event
+
+        // Map IOF classes to database EventClass IDs (handle null/empty class list)
+        val classMapping = if (iofEvent?.clazz != null && iofEvent.clazz.isNotEmpty()) {
+            mapIofClassesToDatabase(iofEvent.clazz, event.classes.toList())
+        } else {
+            emptyMap()
+        }
+
+        // Get controls and courses data
+        val raceData = courseData.raceCourseData.first()
+
+        val controlsData = getControlsData(raceData)
+        val coursesData = getCoursesData(raceData, classMapping)
+
+        // Create and save the map
+        val mapData = courseData.raceCourseData.first().map.firstOrNull()
+        val map = RaceMap(
+            raceId = race.id,
+            name = name,
+            scale = mapData?.scale?.toInt(),
+            mapArea = getMapArea(mapData)
         )
-        event.id?.let { coursesRepository.save(it, map) }
+        val savedMap = mapRepository.save(map)
 
-    }
+        // Save controls with reference to the map
+        val savedControls = mutableMapOf<String, Control>()
+        controlsData.forEach { control ->
+            control.mapId = savedMap.id
+            val savedControl = controlRepository.save(control)
+            savedControls[savedControl.controlCode] = savedControl
+        }
 
-    private fun getCourses(raceData: RaceCourseData, eventClasses: List<EventClass>?): List<Course> {
-        val courses = mutableListOf<Course>()
-        for(course in raceData.course) {
-            if(!course.courseFamily.isNullOrBlank() && courses.any { it.name == course.courseFamily }) {
-               courses.first { it.name == course.courseFamily }.variants.add(
-                   CourseVariant(
-                       name = course.name,
-                       length = course.length,
-                       climb = course.climb,
-                       controls = getLegs(course.courseControl),
-                       classes = getClasses(course, raceData.classCourseAssignment, eventClasses)
-                   )
-               )
-            } else {
-                courses.add(getCourse(course, raceData.classCourseAssignment, eventClasses))
+        // Save courses with their variants and legs
+        coursesData.forEach { courseDataItem ->
+            courseDataItem.course.mapId = savedMap.id
+            val savedCourse = courseRepository.save(courseDataItem.course)
+
+            // Save variants and legs
+            courseDataItem.variants.forEach { variantData ->
+                variantData.variant.courseId = savedCourse.id
+                val savedVariant = courseRepository.save(Course(
+                    id = savedCourse.id,
+                    name = savedCourse.name,
+                    mapId = savedCourse.mapId,
+                    variants = mutableSetOf(variantData.variant)
+                )).variants.first()
+
+                // Save legs and link to controls
+                variantData.legs.forEach { legData ->
+                    legData.leg.courseVariantId = savedVariant.id
+                    val savedLeg = legRepository.save(legData.leg)
+
+                    // Link leg to controls via join table
+                    legData.controlCodes.forEach { controlCode ->
+                        val control = savedControls[controlCode]
+                        if (control != null && control.id != null && savedLeg.id != null) {
+                            legControlRepository.linkLegToControl(savedLeg.id!!, control.id!!)
+                        }
+                    }
+                }
+            }
+
+            // Link course to classes via join table
+            courseDataItem.classIds.forEach { classId ->
+                if (savedCourse.id != null) {
+                    classCourseRepository.linkClassToCourse(classId, savedCourse.id!!)
+                }
             }
         }
-        return courses
     }
 
-    private fun getCourse(
-        course: org.iof.Course,
-        classCourseAssignment: List<ClassCourseAssignment>,
-        eventClasses: List<EventClass>?, ): Course {
-        return Course(
-            name = if(course.courseFamily.isNullOrBlank()) course.name else course.courseFamily,
-            variants = mutableListOf(
-                CourseVariant(
-                    name =  if(!course.courseFamily.isNullOrBlank()) course.name else null,
-                    length = course.length,
-                    climb = course.climb,
-                    controls = getLegs(course.courseControl),
-                    classes = getClasses(course, classCourseAssignment, eventClasses)
-                )
-            )
-        )
+    /**
+     * Maps IOF XML classes to database EventClass IDs by matching class names
+     */
+    private fun mapIofClassesToDatabase(
+        iofClasses: List<org.iof.Class>,
+        dbClasses: List<EventClass>
+    ): Map<String, UUID> {
+        val mapping = mutableMapOf<String, UUID>()
 
-    }
+        iofClasses.forEach { iofClass ->
+            val className = iofClass.name
+            val matchingDbClass = dbClasses.find { it.name.equals(className, ignoreCase = true) }
 
-    private fun getClasses(
-        course: org.iof.Course,
-        classCourseAssignment: List<ClassCourseAssignment>,
-        eventClasses: List<EventClass>?
-    ): List<String> {
-        val classNames = classCourseAssignment.filter { it.courseName == course.name }.map { it.className.uppercase() }
-        return eventClasses?.filter { classNames.contains(it.name.uppercase()) }?.map { it.eventClassId } ?: listOf()
-    }
-
-    private fun getLegs(courseControls: List<org.iof.CourseControl>): List<Leg> {
-        val legs = mutableListOf<Leg>()
-        for (leg in courseControls) {
-            legs.add(
-                Leg(
-                    controlCodes = leg.control,
-                    mapText = leg.mapText,
-                    lengt = leg.legLength
-                )
-            )
+            if (matchingDbClass != null) {
+                mapping[className] = matchingDbClass.id
+                println("Mapped class: '$className' -> ${matchingDbClass.id}")
+            } else {
+                println("Warning: Class '$className' from XML not found in database")
+            }
         }
-        return legs
+
+        return mapping
     }
 
-    private fun getControls(raceData: RaceCourseData): List<Control> {
-      val controls = mutableListOf<Control>()
-        for(control in raceData.control) {
+    private data class CourseDataItem(
+        val course: Course,
+        val variants: List<VariantData>,
+        val classIds: List<UUID>
+    )
+
+    private data class VariantData(
+        val variant: CourseVariant,
+        val legs: List<LegData>
+    )
+
+    private data class LegData(
+        val leg: Leg,
+        val controlCodes: List<String>
+    )
+
+    private fun getCoursesData(
+        raceData: RaceCourseData,
+        classMapping: Map<String, UUID>
+    ): List<CourseDataItem> {
+        val coursesData = mutableListOf<CourseDataItem>()
+        val coursesMap = mutableMapOf<String, CourseDataItem>()
+
+        for (course in raceData.course) {
+            val courseFamily = if (!course.courseFamily.isNullOrBlank()) course.courseFamily else course.name
+
+            if (coursesMap.containsKey(courseFamily)) {
+                // Add variant to existing course
+                val existingCourseData = coursesMap[courseFamily] ?: continue
+                val legsData = getLegsData(course.courseControl)
+                val variant = CourseVariant(
+                    name = course.name,
+                    length = course.length,
+                    climb = course.climb
+                )
+                val variantData = VariantData(variant, legsData)
+
+                // Update the course data with additional variant and classes
+                val classIds = getClassIds(course, raceData.classCourseAssignment, classMapping)
+                val updatedClassIds = (existingCourseData.classIds + classIds).distinct()
+                val updatedCourseData = existingCourseData.copy(
+                    variants = existingCourseData.variants + variantData,
+                    classIds = updatedClassIds
+                )
+                coursesMap[courseFamily] = updatedCourseData
+            } else {
+                // Create new course
+                val classIds = getClassIds(course, raceData.classCourseAssignment, classMapping)
+                val newCourse = Course(
+                    name = courseFamily
+                )
+                val legsData = getLegsData(course.courseControl)
+                val variant = CourseVariant(
+                    name = if (!course.courseFamily.isNullOrBlank()) course.name else null,
+                    length = course.length,
+                    climb = course.climb
+                )
+                val variantData = VariantData(variant, legsData)
+                val courseDataItem = CourseDataItem(newCourse, listOf(variantData), classIds)
+                coursesMap[courseFamily] = courseDataItem
+                coursesData.add(courseDataItem)
+            }
+        }
+
+        return coursesData
+    }
+
+    private fun getClassIds(
+        course: org.iof.Course,
+        classCourseAssignment: List<ClassCourseAssignment>?,
+        classMapping: Map<String, UUID>
+    ): List<UUID> {
+        // If no class assignments provided, return empty list
+        if (classCourseAssignment.isNullOrEmpty()) {
+            return emptyList()
+        }
+
+        val classNames = classCourseAssignment
+            .filter { it.courseName == course.name }
+            .map { it.className }
+
+        return classNames.mapNotNull { className ->
+            classMapping[className] ?: run {
+                null
+            }
+        }
+    }
+
+    private fun getLegsData(
+        courseControls: List<org.iof.CourseControl>
+    ): List<LegData> {
+        val legsData = mutableListOf<LegData>()
+        courseControls.forEachIndexed { index, legDef ->
+            val controlCodes = legDef.control.toList()
+            val leg = Leg(
+                sequenceNumber = (legDef.mapText?.toIntOrNull() ?: (index + 1)),
+                length = legDef.legLength
+            )
+            legsData.add(LegData(leg, controlCodes))
+        }
+        return legsData
+    }
+
+    private fun getControlsData(raceData: RaceCourseData): List<Control> {
+        val controls = mutableListOf<Control>()
+        for (control in raceData.control) {
             controls.add(getControl(control, raceData.course))
         }
         return controls
@@ -118,18 +264,18 @@ class CourseService {
         return Control(
             type = getControlType(control, courses),
             controlCode = control.id.value,
-            position = getGeoPoint(control.position),
+            geoPosition = getGeoPosition(control.position),
             mapPosition = getPosition(control.mapPosition)
         )
     }
 
     private fun getControlType(control: org.iof.Control, courses: List<org.iof.Course>): ControlType {
-        if(control.type != null) {
+        if (control.type != null) {
             return convertControlType(control.type)
         }
-        for(course in courses) {
-            for(courseControl in course.courseControl) {
-                if(courseControl.control.contains(control.id.value)) {
+        for (course in courses) {
+            for (courseControl in course.courseControl) {
+                if (courseControl.control.contains(control.id.value)) {
                     return convertControlType(courseControl.type)
                 }
             }
@@ -147,31 +293,32 @@ class CourseService {
         }
     }
 
-    private fun getGeoPoint(position: org.iof.GeoPosition?): GeoPoint? {
+    private fun getGeoPosition(position: org.iof.GeoPosition?): GeoPosition? {
         if (position == null) {
             return null
         }
-        return GeoPoint(position.lat, position.lng)
+        return GeoPosition(position.lat, position.lng)
     }
 
-    private fun getMapPosition(map: org.iof.Map?): MapPosition? {
+    private fun getMapArea(map: org.iof.Map?): MapArea? {
         if (map == null) {
             return null
         }
-        return MapPosition(
-            topLeftPosition = getPosition(map.mapPositionTopLeft),
-            bottomRightPosition = getPosition(map.mapPositionBottomRight)
+        val topLeft = getPosition(map.mapPositionTopLeft)
+        val bottomRight = getPosition(map.mapPositionBottomRight)
+        return MapArea(
+            topLeftX = topLeft.x,
+            topLeftY = topLeft.y,
+            bottomRightX = bottomRight.x,
+            bottomRightY = bottomRight.y
         )
-
     }
 
-    private fun getPosition(mapPosition: org.iof.MapPosition): Position {
-
-        return Position(
+    private fun getPosition(mapPosition: org.iof.MapPosition): MapPosition {
+        return MapPosition(
             x = mapPosition.x,
-            y = mapPosition.y,
-            unit = mapPosition.unit
+            y = mapPosition.y
         )
-
     }
 }
+

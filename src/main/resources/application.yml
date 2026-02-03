@@ -2,9 +2,7 @@ logging:
   level:
     root: INFO
 server:
-  port: 8080
-  error:
-    include-message: always
+  port: 8081
   servlet:
     context-path: /rest
 springdoc:
@@ -12,18 +10,39 @@ springdoc:
     path: /api-docs
   swagger-ui:
     path: /documentation.html
+spring:
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          jwk-set-uri: https://${SUPABASE_PROJECT_REF:}.supabase.co/auth/v1/.well-known/jwks.json
+          issuer-uri: https://${SUPABASE_PROJECT_REF:}.supabase.co/auth/v1
+  datasource:
+    url: ${POSTGRES_DB:jdbc:postgresql://127.0.0.1:54322/postgres}
+    username: ${POSTGRES_USER:postgres}
+    password: ${POSTGRES_PASSWORD:postgres}
+    driverClassName: org.postgresql.Driver
+    hikari:
+      data-source-properties:
+        string-type: unspecified
+  mvc:
+    format:
+      date: yyyy-MM-dd
+  web:
+    error:
+      include-message: always
 management:
   endpoints:
     web:
       exposure:
-        include: 
+        include:
           - loggers
           - health
           - metrics
   endpoint:
     loggers:
-      enabled: true
+      access: read_only
     health:
-      enabled: true
+      access: read_only
     metrics:
-      enabled: true
+      access: read_only
