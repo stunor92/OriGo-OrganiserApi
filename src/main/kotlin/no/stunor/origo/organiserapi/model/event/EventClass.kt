@@ -1,26 +1,11 @@
 package no.stunor.origo.organiserapi.model.event
 
-import com.fasterxml.jackson.annotation.JsonIgnore
-import jakarta.persistence.Entity
-import jakarta.persistence.GeneratedValue
-import jakarta.persistence.Id
-import jakarta.persistence.ManyToOne
-import jakarta.persistence.Table
-import org.hibernate.annotations.JdbcTypeCode
-import org.hibernate.type.SqlTypes
 import java.util.*
 
-@Entity
-@Table(name = "class")
 data class EventClass(
-    @Id
-    @GeneratedValue
-    @JdbcTypeCode(SqlTypes.UUID)
     var id: UUID = UUID.randomUUID(),
     var eventorRef: String = "",
     var name: String = "",
-    var shortName: String = "",
-    @ManyToOne
-    @JsonIgnore
-    var event: Event? = null
+    var shortName: String = ""
 )
+

@@ -2,7 +2,6 @@ package no.stunor.origo.organiserapi.model.competitor
 
 import no.stunor.origo.organiserapi.model.person.Gender
 import no.stunor.origo.organiserapi.model.person.PersonName
-import java.io.Serializable
 import java.sql.Timestamp
 
 data class TeamMemberCompetitor(

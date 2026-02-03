@@ -1,8 +1,5 @@
 package no.stunor.origo.organiserapi.model.person
 
-import com.fasterxml.jackson.annotation.JsonIgnore
-import java.io.Serializable
-
 data class Person(
         var id: String? = null,
         var eventorId: String = "",

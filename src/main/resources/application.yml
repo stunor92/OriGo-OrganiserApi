@@ -3,8 +3,6 @@ logging:
     root: INFO
 server:
   port: 8081
-  error:
-    include-message: always
   servlet:
     context-path: /rest
 springdoc:
@@ -20,7 +18,7 @@ spring:
     driverClassName: org.postgresql.Driver
     hikari:
       data-source-properties:
-        stringtype: unspecified
+        string-type: unspecified
   jpa:
     properties:
       hibernate:
@@ -28,6 +26,9 @@ spring:
   mvc:
     format:
       date: yyyy-MM-dd
+  web:
+    error:
+      include-message: always
 management:
   endpoints:
     web:
