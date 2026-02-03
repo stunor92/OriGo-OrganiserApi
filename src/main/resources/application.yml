@@ -11,18 +11,20 @@ springdoc:
   swagger-ui:
     path: /documentation.html
 spring:
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          jwk-set-uri: https://${SUPABASE_PROJECT_REF:}.supabase.co/auth/v1/.well-known/jwks.json
+          issuer-uri: https://${SUPABASE_PROJECT_REF:}.supabase.co/auth/v1
   datasource:
-    url: ${POSTGRES_DB}
-    username: ${POSTGRES_USER}
-    password: ${POSTGRES_PASSWORD}
+    url: ${POSTGRES_DB:jdbc:postgresql://127.0.0.1:54322/postgres}
+    username: ${POSTGRES_USER:postgres}
+    password: ${POSTGRES_PASSWORD:postgres}
     driverClassName: org.postgresql.Driver
     hikari:
       data-source-properties:
         string-type: unspecified
-  jpa:
-    properties:
-      hibernate:
-        dialect: org.hibernate.dialect.PostgreSQLDialect
   mvc:
     format:
       date: yyyy-MM-dd
@@ -44,6 +46,3 @@ management:
       access: read_only
     metrics:
       access: read_only
-config:
-  jwt:
-    secret: ${JWT_SECRET:super-secret-jwt-token-with-at-least-32-characters-long}
