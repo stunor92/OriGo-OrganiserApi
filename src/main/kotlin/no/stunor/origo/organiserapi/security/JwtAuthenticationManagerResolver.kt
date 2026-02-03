@@ -3,7 +3,6 @@ package no.stunor.origo.organiserapi.security
 import jakarta.servlet.http.HttpServletRequest
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
-import org.springframework.security.authentication.AnonymousAuthenticationToken
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.AuthenticationManagerResolver
 import org.springframework.security.core.authority.SimpleGrantedAuthority
@@ -33,7 +32,7 @@ class JwtAuthenticationManagerResolver(
         log.info("Initializing JwtAuthenticationManagerResolver with JWKS URI: $jwkSetUri")
 
         // Verify JWKS URI is properly configured
-        if (jwkSetUri.contains("\${")) {
+        if (jwkSetUri.contains($$"${")) {
             log.error("JWKS URI not properly resolved: $jwkSetUri - Check SUPABASE_PROJECT_REF environment variable")
         }
     }
@@ -67,7 +66,6 @@ class JwtAuthenticationManagerResolver(
     }
 
     override fun resolve(request: HttpServletRequest): AuthenticationManager {
-        val isPublicEndpoint = isPublicEndpoint(request)
         val path = request.requestURI.removePrefix(request.contextPath)
 
         return AuthenticationManager { authentication ->
@@ -75,43 +73,15 @@ class JwtAuthenticationManagerResolver(
                 // Try to validate JWT token
                 val result = jwtAuthenticationProvider.authenticate(authentication)
                 log.debug("JWT authentication successful for ${request.method} $path")
-                result ?: createAnonymousAuthentication() // Handle potential null
+                result ?: throw Exception("JWT authentication returned null")
             } catch (e: Exception) {
-                if (isPublicEndpoint) {
-                    // Public endpoint with invalid token - treat as anonymous (same as no token)
-                    log.info("Invalid JWT token on public endpoint ${request.method} $path - allowing anonymous access")
-                    log.debug("JWT validation error details: ${e.javaClass.simpleName} - ${e.message}", e)
-                    createAnonymousAuthentication()
-                } else {
                     // Protected endpoint with invalid token - reject with 401
-                    log.warn("Invalid JWT token on protected endpoint ${request.method} $path - rejecting")
-                    log.warn("JWT validation error: ${e.javaClass.simpleName}")
-                    log.warn("Error message: ${e.message}")
-                    log.debug("Full stack trace:", e)
-                    throw e
-                }
+                log.warn("Invalid JWT token on protected endpoint ${request.method} $path - rejecting")
+                log.warn("JWT validation error: ${e.javaClass.simpleName}")
+                log.warn("Error message: ${e.message}")
+                log.debug("Full stack trace:", e)
+                throw e
             }
-        }
-    }
-
-    private fun createAnonymousAuthentication(): AnonymousAuthenticationToken {
-        return AnonymousAuthenticationToken(
-            "anonymous",
-            "anonymousUser",
-            listOf(SimpleGrantedAuthority("ROLE_ANONYMOUS"))
-        )
-    }
-
-    private fun isPublicEndpoint(request: HttpServletRequest): Boolean {
-        val path = request.requestURI.removePrefix(request.contextPath)
-
-        return when {
-            // Public endpoints that don't require authentication
-            path.startsWith("/actuator/") -> true
-            path.startsWith("/api-docs/") -> true
-            path.startsWith("/swagger-ui/") -> true
-            path == "/documentation.html" -> true
-            else -> false
         }
     }
 }
