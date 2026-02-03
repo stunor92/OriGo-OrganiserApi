@@ -25,10 +25,6 @@ internal class CoursesController {
         @RequestHeader(required = true, value = "Map-Name") name: String,
         @RequestBody(required = true) xmlBody: String
     ) {
-        log.info("=== Received course data request ===")
-        log.info("Race ID: $raceId, Map Name: $name")
-        log.info("XML body length: ${xmlBody.length} characters")
-
         // Use JAXB to unmarshal the XML
         val courseData = try {
             val unmarshaller = jaxbContext.createUnmarshaller()
@@ -38,16 +34,7 @@ internal class CoursesController {
             throw IllegalArgumentException("Failed to parse CourseData XML: ${e.message}", e)
         }
 
-        log.info("Parsed CourseData: Event='${courseData.event?.name}', RaceCourseData count=${courseData.raceCourseData?.size ?: 0}")
-
-        if (courseData.raceCourseData != null && courseData.raceCourseData.isNotEmpty()) {
-            val raceData = courseData.raceCourseData.first()
-            log.info("  -> Controls: ${raceData.control?.size ?: 0}, Courses: ${raceData.course?.size ?: 0}")
-        }
-
         courseService.saveCourse(raceId, name, courseData)
-
-        log.info("✅ Course import completed successfully")
     }
 
 }

@@ -41,12 +41,9 @@ open class CourseService {
 
     @Transactional
     open fun saveCourse(raceId: UUID, name: String, courseData: CourseData) {
-        println("=== Starting course import ===")
-        println("RaceCourseData count: ${courseData.raceCourseData?.size ?: 0}")
 
-        if (courseData.raceCourseData == null || courseData.raceCourseData.isEmpty()) {
-            println("ERROR: raceCourseData is null or empty!")
-            throw IllegalArgumentException("CourseData must contain at least one RaceCourseData element")
+        require(!(courseData.raceCourseData.isNullOrEmpty())) {
+            "CourseData must contain at least one RaceCourseData element."
         }
 
         // Get the race from database
@@ -57,22 +54,16 @@ open class CourseService {
 
         // Get the IOF event data from the XML (contains class definitions)
         val iofEvent = courseData.event
-        println("IOF Event name: ${iofEvent?.name}")
-        println("IOF Event classes: ${iofEvent?.clazz?.size ?: 0}")
 
         // Map IOF classes to database EventClass IDs (handle null/empty class list)
         val classMapping = if (iofEvent?.clazz != null && iofEvent.clazz.isNotEmpty()) {
             mapIofClassesToDatabase(iofEvent.clazz, event.classes.toList())
         } else {
-            println("WARNING: No classes found in XML Event - courses will not be linked to classes")
             emptyMap()
         }
 
         // Get controls and courses data
         val raceData = courseData.raceCourseData.first()
-        println("Controls count: ${raceData.control?.size ?: 0}")
-        println("Courses count: ${raceData.course?.size ?: 0}")
-        println("ClassCourseAssignments count: ${raceData.classCourseAssignment?.size ?: 0}")
 
         val controlsData = getControlsData(raceData)
         val coursesData = getCoursesData(raceData, classMapping)
@@ -232,7 +223,6 @@ open class CourseService {
     ): List<UUID> {
         // If no class assignments provided, return empty list
         if (classCourseAssignment.isNullOrEmpty()) {
-            println("INFO: No ClassCourseAssignment elements - course '${course.name}' will not be linked to any classes")
             return emptyList()
         }
 
@@ -242,7 +232,6 @@ open class CourseService {
 
         return classNames.mapNotNull { className ->
             classMapping[className] ?: run {
-                println("Warning: Class '$className' assigned to course '${course.name}' not found in mapping")
                 null
             }
         }
