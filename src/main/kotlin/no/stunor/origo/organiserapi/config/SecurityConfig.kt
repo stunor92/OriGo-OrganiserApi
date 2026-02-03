@@ -4,6 +4,7 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
+import org.springframework.security.config.http.SessionCreationPolicy
 import org.springframework.security.web.SecurityFilterChain
 
 @Configuration
@@ -13,20 +14,18 @@ open class SecurityConfig {
     @Bean
     open fun securityFilterChain(http: HttpSecurity): SecurityFilterChain {
         http
+            .csrf { it.disable() }
+            .sessionManagement { it.sessionCreationPolicy(SessionCreationPolicy.STATELESS) }
             .authorizeHttpRequests { authorize ->
                 authorize
-                    // Allow public access to actuator health endpoint
-                    .requestMatchers("/actuator/health", "/actuator/health/**").permitAll()
-                    // Allow public access to test ping endpoint
-                    .requestMatchers("/public/**").permitAll()
-                    // Allow public access to API documentation
-                    .requestMatchers("/api-docs", "/api-docs/**", "/documentation.html", "/swagger-ui/**").permitAll()
-                    // All other endpoints require authentication
+                    .requestMatchers("/actuator/**").permitAll()
+                    .requestMatchers("/api-docs/**", "/documentation.html", "/swagger-ui/**").permitAll()
                     .anyRequest().authenticated()
             }
             .oauth2ResourceServer { oauth2 ->
                 oauth2.jwt { }
             }
+            .anonymous { }
 
         return http.build()
     }
