@@ -15,6 +15,8 @@ Based on the `getEventEntryList` functionality from [origo-eventor-api](https://
 
 ### POST `/rest/event/{eventorId}/{eventId}/{raceId}/sync-entries`
 
+**Note:** The `/rest` prefix comes from the application's servlet context-path configured in `application.yml`. The controller is mapped to `/event`, so the full path becomes `/rest/event/...`.
+
 Syncs event entry list from eventor-api and saves signed up competitors to the database.
 
 **Path Parameters:**
