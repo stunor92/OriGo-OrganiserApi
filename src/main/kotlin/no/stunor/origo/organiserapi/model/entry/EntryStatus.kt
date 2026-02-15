@@ -1,12 +1,11 @@
-package no.stunor.origo.organiserapi.model.competitor
+package no.stunor.origo.organiserapi.model.entry
 
-enum class CompetitorStatus {
+enum class EntryStatus {
     NotActivated,
     Activated,
-    Deregistered, 
-    SignedUp, 
-    Started, 
+    Started,
     Finished,
+    OK,
     MissingPunch,
     Disqualified,
     DidNotFinish,
@@ -15,5 +14,6 @@ enum class CompetitorStatus {
     SportWithdraw,
     NotStarted,
     DidNotStart,
-    Cancelled
+    Cancelled,
+    Deregistered
 }
