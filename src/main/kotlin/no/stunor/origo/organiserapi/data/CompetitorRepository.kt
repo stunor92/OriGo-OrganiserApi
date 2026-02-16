@@ -141,15 +141,13 @@ open class CompetitorRepository(private val jdbcTemplate: JdbcTemplate) {
         }
 
         // Handle punching units in separate table if present
-        if (competitor.punchingUnit != null) {
-            savePunchingUnit(id, competitor.punchingUnit!!)
-        }
+        competitor.punchingUnit?.let { savePunchingUnit(id, it) }
 
         return competitor.copy(id = id.toString())
     }
 
     private fun savePunchingUnit(entryId: UUID, punchingUnit: no.stunor.origo.organiserapi.model.competitor.PunchingUnit) {
-        // Delete existing punching units for this entry
+        // Delete existing punching units for this person entry (leg IS NULL for person entries, leg has value for team members)
         jdbcTemplate.update(
             "DELETE FROM punching_unit_entry WHERE entry_id = ?::uuid AND leg IS NULL",
             entryId
