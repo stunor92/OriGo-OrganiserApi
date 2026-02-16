@@ -1,33 +1,24 @@
-# Database Migrations
+# Database Schema Reference
 
-This directory contains SQL migration scripts for the database schema.
+This directory contains documentation about the database schema used by this API.
 
-## Running Migrations
+## Schema Management
 
-Since this project doesn't use Flyway or Liquibase, migrations need to be applied manually to your PostgreSQL/Supabase database.
+The database schema is managed by Flyway in a separate Supabase management project.
+This API consumes the schema but does not create or migrate it.
 
-### Apply the competitor table migration:
+## Schema Files
 
-```bash
-psql -h <host> -U <username> -d <database> -f db/migrations/001_create_competitor_table.sql
-```
+- `SCHEMA_REFERENCE.md` - Documentation of the entry tables and related structures
 
-Or in Supabase SQL Editor, copy and paste the content of the migration file.
+## Entry System
 
-## Migration Files
+The API saves competitor entries to these tables:
+- `person_entry` - Individual competitor entries (inherits from `entry`)
+- `team_entry` - Team entries for relay events (inherits from `entry`)
+- `punching_unit_entry` - E-card assignments
+- `entry_organisation` - Organization associations
+- `split_time` - Split times for entries
+- `entry_fee` - Fee associations
 
-- `001_create_competitor_table.sql` - Creates the competitor table for storing signed up competitors from event entry lists
-
-## Table Structure
-
-### competitor
-Stores person competitors who have signed up for events/races via the eventor-api.
-
-Key columns:
-- `id` - Unique identifier (matches entry ID from eventor-api)
-- `race_id` - Reference to the race
-- `event_class_id` - Reference to the event class
-- `person_id` - Person identifier from eventor
-- Name, organization, birth year, nationality, gender
-- Punching unit information (e-card)
-- Start/finish times and status
+See `SCHEMA_REFERENCE.md` for detailed table structures.

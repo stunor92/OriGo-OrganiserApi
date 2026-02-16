@@ -25,6 +25,9 @@ Successfully implemented a new API service based on `getEventEntryList` from [or
 **CompetitorRepository**
 - JDBC-based repository using Spring JdbcTemplate
 - Upsert operations (insert or update existing records)
+- Saves to `person_entry` table (PostgreSQL table inheritance)
+- Handles punching units in separate `punching_unit_entry` table
+- Uses UUID-based primary and foreign keys
 - Query methods: findById, findByRaceId, deleteByRaceId
 
 ### 4. Data Models
@@ -34,10 +37,11 @@ Successfully implemented a new API service based on `getEventEntryList` from [or
 - `PersonCompetitor` - Existing model used for database storage
 
 ### 5. Database Schema
-- Created `competitor` table schema with all necessary fields
-- Indexes for common queries (race_id, person_id, event_class_id)
-- Auto-updating `updated_at` timestamp trigger
-- Migration script: `db/migrations/001_create_competitor_table.sql`
+- Schema managed by Flyway in separate Supabase project
+- Uses PostgreSQL table inheritance (`person_entry` inherits from `entry`)
+- UUID-based primary keys and foreign keys
+- Separate tables for punching units, organizations, split times
+- Schema documentation: `db/SCHEMA_REFERENCE.md`
 
 ### 6. Configuration
 - RestTemplate bean for HTTP client
@@ -67,9 +71,12 @@ Successfully implemented a new API service based on `getEventEntryList` from [or
 2. ✅ **Database-only** - Competitors saved to DB, not returned in response (per requirements)
 3. ✅ **RestTemplate** - Uses existing Spring Web dependency
 4. ✅ **JDBC Template** - Consistent with existing repository pattern
-5. ✅ **Upsert pattern** - Handles both new entries and updates
-6. ✅ **Error resilience** - Individual save failures don't stop the process
-7. ✅ **Transaction management** - @Transactional for data consistency
+5. ✅ **PostgreSQL table inheritance** - Uses person_entry inheriting from entry
+6. ✅ **UUID-based keys** - All IDs use UUID for consistency with schema
+7. ✅ **Upsert pattern** - Handles both new entries and updates
+8. ✅ **Error resilience** - Individual save failures don't stop the process
+9. ✅ **Transaction management** - @Transactional for data consistency
+10. ✅ **Normalized schema** - Separate tables for punching units and organizations
 
 ## Files Created/Modified
 
@@ -81,9 +88,10 @@ Successfully implemented a new API service based on `getEventEntryList` from [or
 5. `src/main/kotlin/no/stunor/origo/organiserapi/model/entry/EntryStatus.kt`
 6. `src/main/kotlin/no/stunor/origo/organiserapi/config/RestTemplateConfig.kt`
 7. `src/test/kotlin/no/stunor/origo/organiserapi/services/EventEntryServiceTest.kt`
-8. `db/migrations/001_create_competitor_table.sql`
+8. `db/SCHEMA_REFERENCE.md`
 9. `db/README.md`
 10. `API_DOCUMENTATION.md`
+11. `IMPLEMENTATION_SUMMARY.md`
 
 ### Modified Files
 1. `src/main/kotlin/no/stunor/origo/organiserapi/model/competitor/CompetitorStatus.kt` - Added missing status values
@@ -92,10 +100,13 @@ Successfully implemented a new API service based on `getEventEntryList` from [or
 ## How to Use
 
 ### 1. Setup Database
-Run the migration script in your Supabase PostgreSQL database:
-```bash
-psql -h <host> -U <user> -d <database> -f db/migrations/001_create_competitor_table.sql
-```
+The database schema is managed by Flyway in a separate Supabase management project.
+Ensure the following tables exist in your database:
+- `person_entry` (inherits from `entry`)
+- `punching_unit_entry`
+- `entry_organisation`
+
+See `db/SCHEMA_REFERENCE.md` for schema details.
 
 ### 2. Configure Environment
 Set the eventor-api URL:

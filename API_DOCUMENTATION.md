@@ -60,15 +60,32 @@ environment:
 
 ### Database Setup
 
-Before using this API, you must create the `competitor` table in your PostgreSQL/Supabase database.
+The database schema is managed by Flyway in a separate Supabase management project.
 
-Run the migration script:
+### Schema Overview
 
-```bash
-psql -h <host> -U <username> -d <database> -f db/migrations/001_create_competitor_table.sql
-```
+The entry system uses PostgreSQL table inheritance:
+- `entry` - Base table with common fields
+- `person_entry` - Inherits from `entry`, adds person-specific fields
+- `team_entry` - Inherits from `entry`, adds team-specific fields
 
-Or copy the content of `db/migrations/001_create_competitor_table.sql` into your Supabase SQL Editor.
+### Key Tables
+
+**person_entry** - Stores individual competitor entries
+- Uses UUID for all IDs (id, race_id, class_id)
+- References race and class tables with foreign keys
+- Person information: eventor_ref, person_eventor_ref, name, birth year, etc.
+- Result data: time, time_behind, position, result_status
+
+**punching_unit_entry** - Stores e-card assignments
+- Links entries to their punching units (e-cards)
+- Supports both person and team member punching units
+
+**entry_organisation** - Links entries to organizations
+- Many-to-many relationship
+- Supports multiple organizations per entry
+
+See `db/SCHEMA_REFERENCE.md` for complete schema details.
 
 ## Architecture
 
@@ -86,6 +103,8 @@ Or copy the content of `db/migrations/001_create_competitor_table.sql` into your
 3. **CompetitorRepository** (`data/CompetitorRepository.kt`)
    - JDBC-based repository for database operations
    - Supports upsert (insert or update) operations
+   - Saves to `person_entry` table with UUID keys
+   - Handles punching units in separate table
    - Queries by race ID
 
 4. **Data Models**
@@ -129,36 +148,41 @@ console.log(`Synced ${result.count} competitors`);
 
 ## Database Schema
 
-### competitor Table
+### person_entry Table (inherits from entry)
+
+The entry system uses PostgreSQL table inheritance. The `person_entry` table inherits common fields from the `entry` base table.
 
 | Column | Type | Description |
 |--------|------|-------------|
-| id | VARCHAR(255) | Primary key, entry ID from eventor-api |
-| race_id | VARCHAR(255) | Race identifier |
-| event_class_id | VARCHAR(255) | Event class identifier |
-| person_id | VARCHAR(255) | Person identifier from eventor |
-| given_name | VARCHAR(255) | First name |
-| family_name | VARCHAR(255) | Last name |
-| organisation_id | VARCHAR(255) | Organization ID |
-| organisation_name | VARCHAR(255) | Organization name |
-| organisation_type | VARCHAR(50) | Organization type (Club, etc.) |
-| organisation_country | VARCHAR(3) | Country code |
-| birth_year | INTEGER | Birth year |
-| nationality | VARCHAR(3) | Nationality code |
-| gender | VARCHAR(20) | Gender |
-| punching_unit_id | VARCHAR(50) | E-card ID |
-| punching_unit_type | VARCHAR(50) | E-card type (Emit, etc.) |
-| bib | VARCHAR(50) | Bib number |
-| status | VARCHAR(50) | Competitor status |
-| start_time | TIMESTAMP | Start time |
-| finish_time | TIMESTAMP | Finish time |
-| created_at | TIMESTAMP | Record creation timestamp |
-| updated_at | TIMESTAMP | Last update timestamp |
+| id | UUID | Primary key, auto-generated |
+| race_id | UUID | Foreign key to race table |
+| class_id | UUID | Foreign key to class table |
+| eventor_ref | TEXT | Entry reference from eventor |
+| person_eventor_ref | TEXT | Person identifier from eventor |
+| given_name | TEXT | First name |
+| family_name | TEXT | Last name |
+| birth_year | BIGINT | Birth year |
+| nationality | TEXT | Nationality code |
+| gender | gender | Gender enum (Man, Woman, Other) |
+| bib | TEXT | Bib number |
+| status | competitor_status | Competitor status enum |
+| start_time | TIMESTAMPTZ | Start time with timezone |
+| finish_time | TIMESTAMPTZ | Finish time with timezone |
+| time | BIGINT | Result time in seconds |
+| time_behind | BIGINT | Time behind leader |
+| position | BIGINT | Position in results |
+| result_status | result_status | Result status enum |
 
-**Indexes:**
-- `idx_competitor_race_id` on `race_id`
-- `idx_competitor_person_id` on `person_id`
-- `idx_competitor_event_class_id` on `event_class_id`
+### Related Tables
+
+**punching_unit_entry** - Stores e-card assignments
+- Links entries to punching units via entry_id (UUID)
+- Supports leg number for relay teams
+
+**entry_organisation** - Many-to-many relationship
+- Links entries to one or more organizations
+
+See `db/SCHEMA_REFERENCE.md` for complete schema details.
 
 ## Security
 
